@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+
+[dev-packages]
+
+[requires]
+python_version = "3.9.1"
+
+[scripts]
+main = "python main.py"
+server = "python server.py"
+setup = "python setup.py build_ext --inplace"
