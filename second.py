@@ -51,17 +51,20 @@ def gen_header(code: int):
     return f"HTTP/1.1 {code} {CodeText[code]}"
 
 
+def split_one(string: str, word: str):
+    result = string.split(word, maxsplit=1)
+    return result[0], '' if len(result) == 1 else result[1]
+
+
 def parse(raw: str):
-    header_bodys = raw.split('\n\n')
-    header = header_bodys[0]
-    body = "\n\n".join(header_bodys[1:])
+    header, body = split_one(raw, '\n\n')
     header_lines = header.splitlines(keepends=False)
     method, path, version = header_lines[0].split(' ')
     headers = []
     for line in header_lines[1:]:
-        values = line.split(':')
-        if values[0] != '':
-            headers += (values[0], ':'.join(values[1:]).strip())
+        key, value = split_one(line, ':')
+        if value != '':
+            headers += (key, value)
     return {
         'method': method,
         'path': path,
