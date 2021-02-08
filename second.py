@@ -51,7 +51,27 @@ def gen_header(code: int):
     return f"HTTP/1.1 {code} {CodeText[code]}"
 
 
-if __name__ == '__main__':
+def parse(raw: str):
+    header_bodys = raw.split('\n\n')
+    header = header_bodys[0]
+    body = "\n\n".join(header_bodys[1:])
+    header_lines = header.splitlines(keepends=False)
+    method, path, version = header_lines[0].split(' ')
+    headers = []
+    for line in header_lines[1:]:
+        values = line.split(':')
+        if values[0] != '':
+            headers += (values[0], ':'.join(values[1:]).strip())
+    return {
+        'method': method,
+        'path': path,
+        'version': version,
+        'headers': headers,
+        'body': body
+    }
+
+
+def main():
     listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     listen_socket.bind((Host, Port))
@@ -62,8 +82,19 @@ if __name__ == '__main__':
     while True:
         client_connection, client_address = listen_socket.accept()
         request_data = client_connection.recv(1024)
-        print(request_data.decode(Code))
-        header = gen_header(200)
-        http_response = gen_response(header, 'Hello, World!')
-        client_connection.sendall(http_response)
-        client_connection.close()
+        request = parse(request_data.decode(Code))
+        print(request)
+        if request['method'] == 'GET':
+            header = gen_header(200)
+            http_response = gen_response(header, f"Hello, {request['path']}")
+            client_connection.sendall(http_response)
+            client_connection.close()
+        else:
+            header = gen_header(404)
+            http_response = gen_response(header, 'Not Found')
+            client_connection.sendall(http_response)
+            client_connection.close()
+
+
+if __name__ == '__main__':
+    main()
