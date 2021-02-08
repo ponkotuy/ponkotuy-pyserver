@@ -64,7 +64,7 @@ def parse(raw: str):
     for line in header_lines[1:]:
         key, value = split_one(line, ':')
         if value != '':
-            headers += (key, value)
+            headers.append((key, value))
     return {
         'method': method,
         'path': path,
