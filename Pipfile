@@ -11,6 +11,5 @@ name = "pypi"
 python_version = "3.9.1"
 
 [scripts]
-main = "python main.py"
-server = "python server.py"
-setup = "python setup.py build_ext --inplace"
+first = "python first.py"
+second = "python second.py"
